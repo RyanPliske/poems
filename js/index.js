@@ -10,7 +10,7 @@ var poemViewController = (function(){
   // Function to Submit to Database
   var submitPoem = function() {
     console.log("Saving poem to database...");
-    this.xmlhttp.open("POST", "poemModel.js", true);
+    this.xmlhttp.open("POST", "https://192.168.1.91:1337/", true);
     this.xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     this.xmlhttp.send("poemName=RyansPoem&poemText=Onomotopoeia");
   };
