@@ -29,15 +29,30 @@ client.connect(function(err) {
   });
 });
 
-https.createServer(options, function (req, res) {
-	// Add a Response
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  // res.end('Hello World\n');
-  res.end('_testcb(\'{"message": "Hello world!"}\')');
-  /*
-  if (req.method == 'POST'){
-  	pg.insert_records(req,res);
+https.createServer(options, function (request, response) {
+	/* Add a Response Header to the Request: 
+  /* First Argument: Status Code 200, 'OK'
+  /* Second Argument: 
+  /* 1: Allow Origin for CORS
+  /* 2: If I want to add more functionality later, I can add more Methods to delete poems, etc.
+  /* 3: Allow Credentials to accept Cookies */
+  response.writeHead(200, {'Content-Type': 'text/javascript',
+                            'Access-Control-Allow-Origin': 'https://192.168.1.91',
+                            'Access-Control-Allow-Methods' : 'GET,POST',
+                            'Access-Control-Allow-Credentials': true});
+
+  
+  if (request.method == 'GET'){
+    // Insert Poem to Database
+  	// pg.insert_records(req,res);
+    // Respond using jsonp format
+    response.end('_testcb(\'{"message": "Retrieved This Poem From Database."}\')');
   }
-  */
+  else if (request.method == 'POST'){
+    // Grab Poem from Database
+    // If successful, Respond with a success message
+    response.end('Successfully Saved to Database');
+  }
+  
 }).listen(1337);
 console.log('Server running at port:1337/');
