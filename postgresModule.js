@@ -3,19 +3,16 @@
 var pg = require('pg');
 // var conString = "postgres://<username>:<password>@<host>/<database>";
 var conString = "postgres://tplisk:psqlMizz0u!6@localhost:5432/tplisk";
-// Create a new, unconnected client from a url based connection string
-var client = new pg.Client(conString);
 
 module.exports.submitPoemToPostgres = function (poemName, poemText, callback){
-	// Connect client
-	client.connect(function(err) {
-		if(err) {
-			console.error('could not connect to postgres', err);
-			return callback(err);
+
+	pg.connect(conString, function(err, dbClient, done){
+		if (err){
+			console.error('error running query', err);
+		    return callback(err);
 		}
 		// Using Prepared Statements: https://github.com/brianc/node-postgres/wiki/Prepared-Statements
-		client.query('INSERT INTO poemschema.poems VALUES (default, \'Ryan\', \'RyanisCool\')', function(err, result) {
-		// client.query( {name: "insertPoem", text:"", values:[]} )
+		dbClient.query( {name: 'insertPoem', text: 'INSERT INTO poemschema.poems VALUES ($1, $2)', values:[poemName,poemText]}, function(err, result) {
 			if(err) {
 		    	console.error('error running query', err);
 		    	return callback(err);
@@ -24,32 +21,31 @@ module.exports.submitPoemToPostgres = function (poemName, poemText, callback){
 			{
 				return callback(null);
 			}
-			// Close connection to Postgres
-			client.end();
+			// Keeps client open awaiting in a pool
+			done();
 		});
 	});
 }
 
 module.exports.retrievePoemFromPostgres = function (poemName, callback){
-	// Connect client
-	client.connect(function(err) {
-		if(err) {
-			console.error('could not connect to postgres', err);
-			return callback(err);
+
+	pg.connect(conString, function(err, dbClient, done){
+		if (err){
+			console.error('error running query', err);
+		    return callback(err);
 		}
-		client.query('SELECT NOW() AS "theTime"', function(err, result) {
-		// client.query('SELECT ')
+		dbClient.query( {name: 'retrievePoem', text: 'SELECT poem_text FROM poemschema.poems WHERE poem_name = $1', values:[poemName]}, function(err, result) {
+		// client.query('SELECT NOW() AS "theTime"', function(err, result) {
 			if(err) {
 		    	console.error('error running query', err);
 		    	return callback(err);
 			}
 			else
 			{
-				console.log(result.rows[0].theTime);
-				return callback(null, result.rows[0].theTime);
+				return callback(null, result.rows[0].poem_text);
 			}
-			// Close connection to Postgres
-			client.end();
+			// Keeps client open awaiting in a pool
+			done();
 		});
 	});
 }
