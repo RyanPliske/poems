@@ -25,7 +25,6 @@ var poemModel = (function(){
                               'Access-Control-Allow-Credentials': true});  
     if (request.method == 'GET'){
       // Insert Poem to Database
-    	// pg.insert_records(req,res);
       postgres.retrievePoemFromPostgres("Ryan", function returnSuccessMessageToBrowser(error, poemText){
         // Respond using jsonp format
         if (error)

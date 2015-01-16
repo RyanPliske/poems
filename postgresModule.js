@@ -13,15 +13,15 @@ module.exports.submitPoemToPostgres = function (poemName, poemText, callback){
 			console.error('could not connect to postgres', err);
 			return callback(err);
 		}
-		client.query('SELECT NOW() AS "theTime"', function(err, result) {
-		// client.query('SELECT ')
+		// Using Prepared Statements: https://github.com/brianc/node-postgres/wiki/Prepared-Statements
+		client.query('INSERT INTO poemschema.poems VALUES (default, \'Ryan\', \'RyanisCool\')', function(err, result) {
+		// client.query( {name: "insertPoem", text:"", values:[]} )
 			if(err) {
 		    	console.error('error running query', err);
 		    	return callback(err);
 			}
 			else
 			{
-				console.log(result.rows[0].theTime);
 				return callback(null);
 			}
 			// Close connection to Postgres

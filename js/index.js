@@ -1,27 +1,28 @@
 "use strict";
 var poemViewController = (function(){
-  // Create a request Object for Ajax
-  var xmlhttp;
-  // Boolean value to know what kind of object was created.
-  xmlhttp = new XMLHttpRequest();
-  // Check if the browser created an XMLHttpRequest object "withCredentials" property. (only exists on XMLHTTPRequest2 objects)
-  if ("withCredentials" in xmlhttp) {
-    xmlhttp.open('POST', 'https://192.168.1.91:1337/', true);
-  // Otherwise, check if XDomainRequest, because it only exists in IE, and is IE's way of making CORS requests.
-  } else if (typeof XDomainRequest != "undefined") {
-    xmlhttp = new XDomainRequest();
-    xmlhttp.open('POST', 'https://192.168.1.91:1337/');
-  } 
-  else {
-    // Otherwise, CORS is not supported by the browser.
-    xmlhttp = null;
-  }
 
-  if (!xmlhttp) {
-    throw new Error('CORS not supported');
-  }
-
-  /* Function to Retrieve the text of the poem (via GET request) from node.js server:
+  // Private Method that creates a request Object for Ajax
+  var _createCORSRequestObject = function() {
+    var xhr = new XMLHttpRequest();
+    // Check if the browser created an XMLHttpRequest object "withCredentials" property. (only exists on XMLHTTPRequest2 objects)
+    if ("withCredentials" in xhr) {
+      xhr.open('POST', 'https://192.168.1.91:1337/', true);
+    // Otherwise, check if XDomainRequest, because it only exists in IE, and is IE's way of making CORS requests.
+    } else if (typeof XDomainRequest != "undefined") {
+      xhr = new XDomainRequest();
+      xhr.open('POST', 'https://192.168.1.91:1337/');
+    } 
+    else {
+      // Otherwise, CORS is not supported by the browser.
+      xhr = null;
+    }
+    if (!xhr) {
+      throw new Error('CORS not supported');
+    }
+    return xhr;
+  };
+  
+  /* Public Function to Retrieve the text of the poem (via GET request) from node.js server:
   /*
   /* My node.js server is listening on port 1337, but the XMLHttpRequest I send from my browser is coming through 
   /* a different port (whicher port Apache is using). This poses a problem because I am failing the same-origin policy 
@@ -54,19 +55,28 @@ var poemViewController = (function(){
         }
       });
     });
-    
   };
-  // Function to Submit Poem to the Database
+  // Public Function to Submit Poem to the Database (see notes from above)
   var submitPoem = function() {
     console.log("Saving poem to database...");
+    var xmlhttp = _createCORSRequestObject();
     // Attempting to use Javascript via CORS
     xmlhttp.send();
+    // Prepare for Successful Response from Server
+    xmlhttp.onload = function(){
+      poemView.displayResponseFromSaving(null,xmlhttp.responseText);
+      // var title = text.match('<title>(.*)?</title>')[1];
+    }
+    // Prepare for Error from Server
+    xmlhttp.onerror = function(){
+      poemView.displayResponseFromSaving('No reponse from the server.');
+    }
+    
   };
   // Make some Functions and Objects available to poemView
   return{
     submitPoem: submitPoem,
     retrievePoem: retrievePoem,
-    xmlhttp: xmlhttp
   };
 })();
 
@@ -89,16 +99,14 @@ var poemView = (function () {
   };
 
   // Successful request using CORS
-  poemViewController.xmlhttp.onload = function(){
-    // When finished
-    var text = poemViewController.xmlhttp.responseText;
-    // var title = text.match('<title>(.*)?</title>')[1];
-    alert('Reponse from CORS request: ' + text);
-  }
-  // Error with request via CORS
-  poemViewController.xmlhttp.onerror = function(){
-    // When finished
-    alert('Error making the request.');
-  }
+  var displayResponseFromSaving = function(error, successMsg) {
+    if (error)
+      alert(error);
+    else
+      alert('Response from CORS request:' + successMsg);
+  }; 
 
+  return{
+    displayResponseFromSaving: displayResponseFromSaving
+  };
 })();
