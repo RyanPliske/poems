@@ -36,19 +36,20 @@ var poemViewController = (function(){
   /* Some noteable understanding was found from: https://senecacd.wordpress.com/2013/02/15/enabling-cors-on-a-node-js-server-same-origin-policy-issue/
   /* Differences betwen CORS and JSONP: JSONP only supports the GET request method. CORS supports other http requests.
   */
-  var retrievePoem = function() {
+  var retrievePoem = function(poemName) {
     console.log("Retrieving poem...");
-    // Attempting to save poem using jsonp
+    // Attempting to save poem using jsonp : http://api.jquery.com/jquery.ajax/
     $(document).ready(function() {
     $.ajax({
         type: 'GET',
         url: 'https://192.168.1.91:1337/',
+        data: { 'poemName': poemName},
         dataType: "jsonp",
-        jsonpCallback: "_testcb",
+        jsonpCallback: "_poem",
         cache: false,
         timeout: 1000,
         success: function(data) {
-            $("#resultFromServer").append(data);
+            $("#poemRetrievalResult").append(data);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             alert(jqXHR + " " + textStatus + " " + errorThrown);
@@ -60,8 +61,9 @@ var poemViewController = (function(){
   var submitPoem = function() {
     console.log("Saving poem to database...");
     var xmlhttp = _createCORSRequestObject();
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     // Attempting to use Javascript via CORS
-    xmlhttp.send();
+    xmlhttp.send("poemName=Poem2&poemText=Superbad");
     // Prepare for Successful Response from Server
     xmlhttp.onload = function(){
       poemView.displayResponseFromSaving(null,xmlhttp.responseText);
@@ -81,7 +83,7 @@ var poemViewController = (function(){
 })();
 
 var poemView = (function () {
-  // Check for https
+  // Force https
   if (window.location.protocol != 'https:')
   {
     window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
@@ -89,13 +91,15 @@ var poemView = (function () {
   var submitPoemButton = document.getElementById("submitPoem");
   var retrievePoemButton = document.getElementById("retrievePoem");
   var resultsTextBox = document.getElementById('resultFromServer');
+  var selectedPoemFromDropDown = document.getElementById("selectAPoem");
   // Submit Poem to Postgres upon Click
   submitPoemButton.onclick = function () {
     poemViewController.submitPoem();
   };
   // Retrieve Poem from Postgres upon Click
   retrievePoemButton.onclick = function () {
-    poemViewController.retrievePoem();
+    var selectedPoem_poemName = selectedPoemFromDropDown.options[selectedPoemFromDropDown.selectedIndex].value;
+    poemViewController.retrievePoem(selectedPoem_poemName);
   };
 
   // Successful request using CORS

@@ -22,28 +22,42 @@ var poemModel = (function(){
     response.writeHead(200, {'Content-Type': 'text/javascript',
                               'Access-Control-Allow-Origin': 'https://192.168.1.91',
                               'Access-Control-Allow-Methods' : 'GET,POST',
-                              'Access-Control-Allow-Credentials': true});  
+                              'Access-Control-Allow-Credentials': true});
+  
     if (request.method == 'GET'){
-      // Insert Poem to Database
-      postgres.retrievePoemFromPostgres("Ryan", function returnSuccessMessageToBrowser(error, poemText){
+      // Parse "Incoming Message" from GET request: http://nodejs.org/api/http.html#http_http_incomingmessage
+      var queryParam = require('url').parse(request.url, true).query
+      // Retrieve Poem from Database
+      postgres.retrievePoemFromPostgres(queryParam.poemName, function (error, poemText){
         // Respond using jsonp format
         if (error)
-          response.end('_testcb(\'{"fail": "Failed To Retrieve From Database: ' + error + ' "}\')');
+          response.end('_poem(\'{"fail": "Failed To Retrieve From Database: ' + error + ' "}\')');
         else
-          response.end('_testcb(\'{"poemText": "' + poemText + '"}\')');
+          response.end('_poem(\'{"poemText": "' + poemText + '"}\')');
       
       });
     }
     else if (request.method == 'POST'){
-      // Grab Poem from Database
-      postgres.submitPoemToPostgres("Ryan", "RyanisCool", function returnSuccessMessageToBrowser(error){
+      // Parse Data from POST request
+      var body = "";
+      request.on('data', function(chunk){
+        body += chunk;
+      });
+      request.on('end', function() {
+        response.end('_poem(\'{"poemText": "' + body + '"}\')');
+      });
+      /*
+      // Post Poem to Database
+      postgres.submitPoemToPostgres("Ryan", "RyanisCool", function (error){
         if (error)
           response.end('Failed During Save to Database: ' + error);
         else
           response.end('Successfully Saved Poem to Database');
       
       });
+*/
     }
+    
   }).listen(1337);
-  console.log('Server running at port:1337/');
+  console.log('Server started. Listening on port:1337/');
 })();
