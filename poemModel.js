@@ -5,6 +5,8 @@ var poemModel = (function(){
   var fs = require('fs');
   // Module for dealing with postgres
   var postgres = require('./postgresModule');
+  // Module for parsing Get Requests
+  var urlParser = require('url');
   // location of SSL certification and key on my server
   var options = {
   	key: fs.readFileSync('/etc/apache2/ssl/apache.key'),
@@ -26,7 +28,7 @@ var poemModel = (function(){
   
     if (request.method == 'GET'){
       // Parse "Incoming Message" from GET request: http://nodejs.org/api/http.html#http_http_incomingmessage
-      var queryParam = require('url').parse(request.url, true).query
+      var queryParam = urlParser.parse(request.url, true).query
       // Retrieve Poem from Database
       postgres.retrievePoemFromPostgres(queryParam.poemName, function (error, poemText){
         // Respond using jsonp format
@@ -38,24 +40,26 @@ var poemModel = (function(){
       });
     }
     else if (request.method == 'POST'){
-      // Parse Data from POST request
-      var body = "";
+      // Parse Data from POST request by first reading in the data
+      var bodyFromRequest = "";
       request.on('data', function(chunk){
-        body += chunk;
+        bodyFromRequest += chunk;
       });
+      // When It has all of the data, then Create parameters Object
       request.on('end', function() {
-        response.end('_poem(\'{"poemText": "' + body + '"}\')');
+        var queryParams = {};
+        // Grab parameters from the body
+        bodyFromRequest.split("&").forEach(function(item) {
+          queryParams[item.split("=")[0]] = item.split("=")[1];
+        });
+        // Send those paramters (the poem and poem name) to the Database
+        postgres.submitPoemToPostgres(queryParams.poemName, queryParams.poemText, function (error){
+          if (error)
+            response.end('Failed During Save to Database: ' + error);
+          else
+            response.end('Successfully Saved Poem to Database');
+        });
       });
-      /*
-      // Post Poem to Database
-      postgres.submitPoemToPostgres("Ryan", "RyanisCool", function (error){
-        if (error)
-          response.end('Failed During Save to Database: ' + error);
-        else
-          response.end('Successfully Saved Poem to Database');
-      
-      });
-*/
     }
     
   }).listen(1337);
