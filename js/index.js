@@ -69,12 +69,12 @@ var poemViewController = (function(){
     });
   };
   // Public Function to Submit Poem to the Database (see notes from above)
-  var submitPoem = function() {
+  var submitPoem = function(poemName, poemText) {
     console.log("Saving poem to database...");
     var xmlhttp = _createCORSRequestObject();
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     // Attempting to use Javascript via CORS
-    xmlhttp.send("poemName=Poem2&poemText=Superbad");
+    xmlhttp.send('poemName=' + poemName + '&poemText=' + poemText);
     // Prepare for Successful Response from Server
     xmlhttp.onload = function(){
       poemView.displayResponseFromSaving(null,xmlhttp.responseText);
@@ -95,13 +95,22 @@ var poemViewController = (function(){
 
 var poemView = (function () {
 
+  var finalizePoemButton = document.getElementById('finalizePoem');
   var submitPoemButton = document.getElementById("submitPoem");
   var retrievePoemButton = document.getElementById("retrievePoem");
-  var retrievedPoemTextBox = document.getElementById('poemRetrievalResult');
+  var poemTextArea = document.getElementById('poemTextArea');
   var selectedPoemFromDropDown = document.getElementById("selectAPoem");
+  
   // Submit Poem to Postgres upon Click
   submitPoemButton.onclick = function () {
-    poemViewController.submitPoem();
+    var nameOfPoem = document.forms['submitPoemForm']['nameOfPoem'].value;
+    var poemText = document.getElementById('poemTextArea').value;
+    if (poemText == '')
+      alert('Please add text to your poem.');
+    else if (nameOfPoem == '')
+      alert('Please name your poem.');
+    else
+      poemViewController.submitPoem(nameOfPoem, poemText);
   };
   // Retrieve Poem from Postgres upon Click
   retrievePoemButton.onclick = function () {
@@ -109,7 +118,7 @@ var poemView = (function () {
     poemViewController.retrievePoem(selectedPoem_poemName);
   };
 
-  // Function to Handle Saving Poem to Database
+  // Public Function to Handle Saving Poem to Database
   var displayResponseFromSaving = function(error, successMsg) {
     if (error)
       alert(error);
@@ -117,33 +126,49 @@ var poemView = (function () {
       alert(successMsg);
   };
 
-  // Function to handle Retrieving Poem 
+  // Public Function to handle Retrieving Poem 
   var displayReturnedPoem = function(error, successMsg) {
     if (error)
       alert(error);
     else
-      retrievedPoemTextBox.innerHTML = successMsg;
+      poemTextArea.innerHTML = successMsg;
   };
+  // Public Function to ready any element to allow for the drop event
   var allowDrop = function(ev) {
-      // prevent default handling of the element.
+      // prevent default handling of the element (allows dropping)
       ev.preventDefault();
   }
-
+  // Public Function to set the data type and value of the dragged element
   var startDrag = function(ev) {
+      // Set data type to text, value set to the id of the draggable element
       ev.dataTransfer.setData("Text", ev.target.id);
   }
-
+  // Public Function to Drop text into Poem's Droppable Area.
   var dropToPoem = function(ev) {
       // Grab the element's ID from the object that was dragged
       var data = ev.dataTransfer.getData("Text");
-      // Append the dragged element into the drop element
-      ev.target.appendChild(document.getElementById(data)); 
+      // Append the dragged element into the drop element (append a node as the last child of current node)
+      // http://www.w3schools.com/jsref/met_node_appendchild.asp
+      ev.target.appendChild(document.getElementById(data));
+      // Edit the Poem's Text
+      _editPoemTextArea();
   }
+  // Public Function to Drop text back into Word Bank.
   var dropToBank = function(ev) {
       // Grab the element's ID from the object that was dragged
       var data = ev.dataTransfer.getData("Text");
       // Append the dragged element into the drop element
       ev.target.appendChild(document.getElementById(data));
+      // Edit the Poem's Text
+      editPoemTextArea();
+  }
+  // Private Function: Crawls HTML elements from the Bin and appends them to Text Area
+  var _editPoemTextArea = function(){
+    // Clear out contents
+    poemTextArea.innerHTML = null;
+    $('#bin').children().each(function(i, element){
+        $("#poemTextArea").append($(element).text().trim() + " ");
+    });
   }
   // Make some functions available
   return{
