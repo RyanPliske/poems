@@ -49,10 +49,13 @@ var poemViewController = (function(){
         cache: false,
         timeout: 1000,
         success: function(data) {
-            $("#poemRetrievalResult").append(data);
+            // Parse the JSON
+            data = JSON.parse(data)
+            // Display the Poem
+            poemView.displayReturnedPoem(null, data.poemText);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            alert(jqXHR + " " + textStatus + " " + errorThrown);
+            poemView.displayReturnedPoem(jqXHR + " " + textStatus + " " + errorThrown);
         }
       });
     });
@@ -90,7 +93,7 @@ var poemView = (function () {
   }
   var submitPoemButton = document.getElementById("submitPoem");
   var retrievePoemButton = document.getElementById("retrievePoem");
-  var resultsTextBox = document.getElementById('resultFromServer');
+  var retrievedPoemTextBox = document.getElementById('poemRetrievalResult');
   var selectedPoemFromDropDown = document.getElementById("selectAPoem");
   // Submit Poem to Postgres upon Click
   submitPoemButton.onclick = function () {
@@ -102,15 +105,23 @@ var poemView = (function () {
     poemViewController.retrievePoem(selectedPoem_poemName);
   };
 
-  // Successful request using CORS
+  // Function to Handle Saving Poem to Database
   var displayResponseFromSaving = function(error, successMsg) {
     if (error)
       alert(error);
     else
-      alert('Response from CORS request:' + successMsg);
-  }; 
+      alert(successMsg);
+  };
 
+  // Function to handle Retrieving Poem 
+  var displayReturnedPoem = function(error, successMsg) {
+    if (error)
+      alert(error);
+    else
+      retrievedPoemTextBox.innerHTML = successMsg;
+  };
   return{
-    displayResponseFromSaving: displayResponseFromSaving
+    displayResponseFromSaving: displayResponseFromSaving,
+    displayReturnedPoem: displayReturnedPoem
   };
 })();
