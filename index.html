@@ -6,20 +6,43 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 </head>
 <body>
-	
-	<div style="width: 200px;">
-		<button type="button" id="submitPoem" style="float: right;">Submit Poem</button>
+	<center>
+	<div id ="DragAndDrop" style="width:40%;height:70vh;border:1px solid;float:right; position:relative;right:50%;">
+		<div id="bin" style="width:49%; height: 100%; border: 1px solid;float: left;" ondrop="poemView.drop(event);" ondragover="poemView.allowDrop(event);">
+		</div>
+		<div id="wordBank" style="width:50%; height: 100%; border: 1px solid; float: left;">
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word1" draggable="true" ondragstart="poemView.drag(event);"> twist </p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word2" draggable="true" ondragstart="poemView.drag(event);">tears</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word3" draggable="true" ondragstart="poemView.drag(event);">dispair</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word4" draggable="true" ondragstart="poemView.drag(event);">far</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word5" draggable="true" ondragstart="poemView.drag(event);">she</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word6" draggable="true" ondragstart="poemView.drag(event);">is</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word7" draggable="true" ondragstart="poemView.drag(event);">for</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word8" draggable="true" ondragstart="poemView.drag(event);">heart</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word9" draggable="true" ondragstart="poemView.drag(event);">someone</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word10" draggable="true" ondragstart="poemView.drag(event);">dream</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word11" draggable="true" ondragstart="poemView.drag(event);">deserves</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word12" draggable="true" ondragstart="poemView.drag(event);">it</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word13" draggable="true" ondragstart="poemView.drag(event);">wants</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word14" draggable="true" ondragstart="poemView.drag(event);">once</p>
+		</div>
 	</div>
-	</br>
-	<p id="poemRetrievalResult"></p>
-	<div style="width: 200px;">
-		<select id="selectAPoem">
-			<option value="Ryan">Ryan</option>
-		</select>
-		<button type="button" id="retrievePoem" style="float: right;">Retrieve Poem</button>
+	<div id="Interface" style="width:30%;height:70vh;border:1px solid;float:left;position:relative;left:50%;">
+		<div id="wrapper" style="width: 90%; height: 90%; position: absolute; top: 50%;">
+			<div style="width: 70%;">
+				<button type="button" id="submitPoem" style="float:right;" >Submit Poem</button>
+			</div>
+			<p></p></br>
+			<div style="width: 70%">
+				<select id="selectAPoem">
+					<option value="Ryan">Ryan</option>
+				</select>
+				<button type="button" id="retrievePoem" style="float: right;">Retrieve Poem</button>
+			</div>
+			<p id="poemRetrievalResult"></p>
+		</div>
 	</div>
-	
-
+</center>
 	<script src="js/index.js" type="text/javascript"></script>
 </body>
 </html>
