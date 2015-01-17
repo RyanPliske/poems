@@ -1,16 +1,24 @@
 "use strict";
 var poemViewController = (function(){
 
+  // Force https
+  if (window.location.protocol != 'https:'){
+    window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+  }
+  else {
+    // Grab current url to know if we're on localhost or not
+    var originToServer = window.location.origin;
+  }
   // Private Method that creates a request Object for Ajax
   var _createCORSRequestObject = function() {
     var xhr = new XMLHttpRequest();
     // Check if the browser created an XMLHttpRequest object "withCredentials" property. (only exists on XMLHTTPRequest2 objects)
     if ("withCredentials" in xhr) {
-      xhr.open('POST', 'https://192.168.1.91:1337/', true);
+      xhr.open('POST', originToServer + ':1337/', true);
     // Otherwise, check if XDomainRequest, because it only exists in IE, and is IE's way of making CORS requests.
     } else if (typeof XDomainRequest != "undefined") {
       xhr = new XDomainRequest();
-      xhr.open('POST', 'https://192.168.1.91:1337/');
+      xhr.open('POST', originToServer + ':1337/');
     } 
     else {
       // Otherwise, CORS is not supported by the browser.
@@ -42,7 +50,7 @@ var poemViewController = (function(){
     $(document).ready(function() {
     $.ajax({
         type: 'GET',
-        url: 'https://192.168.1.91:1337/',
+        url: originToServer + ':1337/',
         data: { 'poemName': poemName},
         dataType: "jsonp",
         jsonpCallback: "_poem",
@@ -86,11 +94,7 @@ var poemViewController = (function(){
 })();
 
 var poemView = (function () {
-  // Force https
-  if (window.location.protocol != 'https:')
-  {
-    window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-  }
+
   var submitPoemButton = document.getElementById("submitPoem");
   var retrievePoemButton = document.getElementById("retrievePoem");
   var retrievedPoemTextBox = document.getElementById('poemRetrievalResult');

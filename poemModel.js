@@ -22,7 +22,7 @@ var poemModel = (function(){
     /* 2: If I want to add more functionality later, I can add more Methods to delete poems, etc.
     /* 3: Allow Credentials to accept Cookies */
     response.writeHead(200, {'Content-Type': 'application/javascript',
-                              'Access-Control-Allow-Origin': 'https://192.168.1.91',
+                              'Access-Control-Allow-Origin': request.headers.origin,
                               'Access-Control-Allow-Methods' : 'GET,POST',
                               'Access-Control-Allow-Credentials': true});
   
