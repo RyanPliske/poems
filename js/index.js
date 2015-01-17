@@ -120,25 +120,34 @@ var poemView = (function () {
     else
       retrievedPoemTextBox.innerHTML = successMsg;
   };
-var allowDrop = function(ev) {
-    ev.preventDefault();
-}
+  var allowDrop = function(ev) {
+      // prevent default handling of the element.
+      ev.preventDefault();
+  }
 
-var drag = function(ev) {
-    ev.dataTransfer.setData("Text", ev.target.id);
-}
+  var startDrag = function(ev) {
+      ev.dataTransfer.setData("Text", ev.target.id);
+  }
 
-var drop = function(ev) {
-    var data = ev.dataTransfer.getData("Text");
-    ev.target.appendChild(document.getElementById(data));
-    ev.preventDefault();
-}
+  var dropToPoem = function(ev) {
+      // Grab the element's ID from the object that was dragged
+      var data = ev.dataTransfer.getData("Text");
+      // Append the dragged element into the drop element
+      ev.target.appendChild(document.getElementById(data)); 
+  }
+  var dropToBank = function(ev) {
+      // Grab the element's ID from the object that was dragged
+      var data = ev.dataTransfer.getData("Text");
+      // Append the dragged element into the drop element
+      ev.target.appendChild(document.getElementById(data));
+  }
   // Make some functions available
   return{
     displayResponseFromSaving: displayResponseFromSaving,
     displayReturnedPoem: displayReturnedPoem,
     allowDrop: allowDrop,
-    drag: drag,
-    drop: drop
+    startDrag: startDrag,
+    dropToPoem: dropToPoem,
+    dropToBank: dropToBank,
   };
 })();

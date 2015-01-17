@@ -8,23 +8,30 @@
 <body>
 	<center>
 	<div id ="DragAndDrop" style="width:40%;height:70vh;border:1px solid;float:right; position:relative;right:50%;">
-		<div id="bin" style="width:49%; height: 100%; border: 1px solid;float: left;" ondrop="poemView.drop(event);" ondragover="poemView.allowDrop(event);">
+		<div id="bin" style="width:49%; height: 100%; border: 1px solid;float: left;" ondrop="poemView.dropToPoem(event);" ondragover="poemView.allowDrop(event);">
 		</div>
-		<div id="wordBank" style="width:50%; height: 100%; border: 1px solid; float: left;">
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word1" draggable="true" ondragstart="poemView.drag(event);"> twist </p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word2" draggable="true" ondragstart="poemView.drag(event);">tears</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word3" draggable="true" ondragstart="poemView.drag(event);">dispair</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word4" draggable="true" ondragstart="poemView.drag(event);">far</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word5" draggable="true" ondragstart="poemView.drag(event);">she</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word6" draggable="true" ondragstart="poemView.drag(event);">is</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word7" draggable="true" ondragstart="poemView.drag(event);">for</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word8" draggable="true" ondragstart="poemView.drag(event);">heart</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word9" draggable="true" ondragstart="poemView.drag(event);">someone</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word10" draggable="true" ondragstart="poemView.drag(event);">dream</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word11" draggable="true" ondragstart="poemView.drag(event);">deserves</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word12" draggable="true" ondragstart="poemView.drag(event);">it</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word13" draggable="true" ondragstart="poemView.drag(event);">wants</p>
-			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word14" draggable="true" ondragstart="poemView.drag(event);">once</p>
+		<div id="wordBank" style="width:50%; height: 100%; border: 1px solid; float: left;" ondrop="poemView.dropToBank(event);" ondragover="poemView.allowDrop(event);">
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word1" draggable="true" ondragstart="poemView.startDrag(event);"> twist </p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word2" draggable="true" ondragstart="poemView.startDrag(event);">tears</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word3" draggable="true" ondragstart="poemView.startDrag(event);">dispair</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word4" draggable="true" ondragstart="poemView.startDrag(event);">far</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word5" draggable="true" ondragstart="poemView.startDrag(event);">she</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word6" draggable="true" ondragstart="poemView.startDrag(event);">is</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word7" draggable="true" ondragstart="poemView.startDrag(event);">for</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word8" draggable="true" ondragstart="poemView.startDrag(event);">heart</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word9" draggable="true" ondragstart="poemView.startDrag(event);">someone</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word10" draggable="true" ondragstart="poemView.startDrag(event);">dream</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word11" draggable="true" ondragstart="poemView.startDrag(event);">.</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word12" draggable="true" ondragstart="poemView.startDrag(event);">deserves</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word13" draggable="true" ondragstart="poemView.startDrag(event);">it</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word14" draggable="true" ondragstart="poemView.startDrag(event);">want</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word15" draggable="true" ondragstart="poemView.startDrag(event);">once</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word16" draggable="true" ondragstart="poemView.startDrag(event);">her</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word17" draggable="true" ondragstart="poemView.startDrag(event);">just</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word18" draggable="true" ondragstart="poemView.startDrag(event);">.</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word19" draggable="true" ondragstart="poemView.startDrag(event);">to</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word20" draggable="true" ondragstart="poemView.startDrag(event);">win</p>
+			<p style="float:left;padding:1px;border:1px solid #0000FF;" id="word21" draggable="true" ondragstart="poemView.startDrag(event);">no</p>
 		</div>
 	</div>
 	<div id="Interface" style="width:30%;height:70vh;border:1px solid;float:left;position:relative;left:50%;">
