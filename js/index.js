@@ -46,7 +46,7 @@ var poemViewController = (function(){
   */
   var retrievePoem = function(poemName) {
     console.log("Retrieving poem...");
-    // Attempting to save poem using jsonp : http://api.jquery.com/jquery.ajax/
+    // Retrieving the selected Poem via jsonp format: http://api.jquery.com/jquery.ajax/
     $(document).ready(function() {
     $.ajax({
         type: 'GET',
@@ -86,10 +86,35 @@ var poemViewController = (function(){
     }
     
   };
-  // Make some Functions and Objects available to poemView
+  // Public Function to Populate Drop Down Menu
+  var getListOfPoems = function(){
+    console.log("Grabbing List of Poems...");
+    $(document).ready(function() {
+    $.ajax({
+        type: 'GET',
+        url: originToServer + ':1337/',
+        data: { 'returnAllPoemNames': 'true'},
+        dataType: "jsonp",
+        jsonpCallback: "_poem",
+        cache: false,
+        timeout: 1000,
+        success: function(data) {
+            // Parse the JSON
+            // data = JSON.parse(data)
+            // Display the Poem
+            poemView.fillPoemDropDown(null, data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            poemView.fillPoemDropDown(jqXHR + " " + textStatus + " " + errorThrown);
+        }
+      });
+    });
+  };
+  // Make Public Functions and Objects available to poemView
   return{
     submitPoem: submitPoem,
     retrievePoem: retrievePoem,
+    getListOfPoems: getListOfPoems
   };
 })();
 
@@ -100,22 +125,17 @@ var poemView = (function () {
   var retrievePoemButton = document.getElementById("retrievePoem");
   var poemTextArea = document.getElementById('poemTextArea');
   var selectedPoemFromDropDown = document.getElementById("selectAPoem");
-  
-  // Submit Poem to Postgres upon Click
-  submitPoemButton.onclick = function () {
-    var nameOfPoem = document.forms['submitPoemForm']['nameOfPoem'].value;
-    var poemText = document.getElementById('poemTextArea').value;
-    if (poemText == '')
-      alert('Please add text to your poem.');
-    else if (nameOfPoem == '')
-      alert('Please name your poem.');
-    else
-      poemViewController.submitPoem(nameOfPoem, poemText);
-  };
-  // Retrieve Poem from Postgres upon Click
-  retrievePoemButton.onclick = function () {
-    var selectedPoem_poemName = selectedPoemFromDropDown.options[selectedPoemFromDropDown.selectedIndex].value;
-    poemViewController.retrievePoem(selectedPoem_poemName);
+  // Populate Drop Down Menu (First, Get List of Poems)
+  poemViewController.getListOfPoems();
+  // Public Function to Handle getting the list of Poems and adding them to Drop Down
+  var fillPoemDropDown = function(error, listOfPoems){
+    // Parse the JSON
+    var poemNames = JSON.parse(listOfPoems)
+    console.log(poemNames);
+    for (var i=0; i < poemNames.poem.length; i++)
+    {
+      console.log(poemNames.poem[i].name);
+    }
   };
 
   // Public Function to Handle Saving Poem to Database
@@ -170,6 +190,24 @@ var poemView = (function () {
         $("#poemTextArea").append($(element).text().trim() + " ");
     });
   }
+
+  // Submit Poem to Postgres upon Click
+  submitPoemButton.onclick = function () {
+    var nameOfPoem = document.forms['submitPoemForm']['nameOfPoem'].value;
+    var poemText = document.getElementById('poemTextArea').value;
+    if (poemText == '')
+      alert('Please add text to your poem.');
+    else if (nameOfPoem == '')
+      alert('Please name your poem.');
+    else
+      poemViewController.submitPoem(nameOfPoem, poemText);
+  };
+  // Retrieve Poem from Postgres upon Click
+  retrievePoemButton.onclick = function () {
+    var selectedPoem_poemName = selectedPoemFromDropDown.options[selectedPoemFromDropDown.selectedIndex].value;
+    poemViewController.retrievePoem(selectedPoem_poemName);
+  };
+
   // Make some functions available
   return{
     displayResponseFromSaving: displayResponseFromSaving,
@@ -178,5 +216,6 @@ var poemView = (function () {
     startDrag: startDrag,
     dropToPoem: dropToPoem,
     dropToBank: dropToBank,
+    fillPoemDropDown: fillPoemDropDown
   };
 })();

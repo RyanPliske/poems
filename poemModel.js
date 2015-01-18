@@ -29,17 +29,24 @@ var poemModel = (function(){
     if (request.method == 'GET'){
       // Parse "Incoming Message" from GET request: http://nodejs.org/api/http.html#http_http_incomingmessage
       var queryParam = urlParser.parse(request.url, true).query
-      // Retrieve Poem from Database
-      postgres.retrievePoemFromPostgres(queryParam.poemName, function (error, poemText){
-        // Respond using jsonp format
-        if (error)
-          response.end('_poem(\'{"fail": "Failed To Retrieve From Database: ' + error + ' "}\')');
-        else
-          response.end('_poem(\'{"poemText": "' + poemText + '"}\')');
-      
-      });
+      if (queryParam.poemName != null)
+      {
+        // Retrieve Poem from Database
+        postgres.retrievePoemFromPostgres(queryParam.poemName, function (error, poemText){
+          // Respond using jsonp format
+          if (error)
+            response.end('_poem(\'{"fail": "Failed To Retrieve From Database: ' + error + ' "}\')');
+          else
+            response.end('_poem(\'{"poemText": "' + poemText + '"}\')');
+        });
+      }
+      if (queryParam.returnAllPoemNames != null)
+      {
+        response.end('_poem(\'{"poem":[{"name": "Ryan"}, {"name": "poem2"}, {"name": "poem3"}]}\')');
+      }
     }
-    else if (request.method == 'POST'){
+    
+    if (request.method == 'POST'){
       // Parse Data from POST request by first reading in the data
       var bodyFromRequest = "";
       request.on('data', function(chunk){

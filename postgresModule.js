@@ -53,8 +53,10 @@ module.exports.retrievePoemFromPostgres = function (poemName, callback){
 				return callback(null, result.rows[0].poem_text);
 			}
 		});
-		// Removes th client from the connection pool
+		// Removes the client from the connection pool
 		done();
 	});
 }
 // Function to Display List of Poems in the Db
+
+
