@@ -51,7 +51,7 @@ var poemViewController = (function(){
     $.ajax({
         type: 'GET',
         url: originToServer + ':1337/',
-        data: { 'poemName': poemName},
+        data: { 'poemName': poemName, 'reqType':'retrievePoem'},
         dataType: "jsonp",
         jsonpCallback: "_poem",
         cache: false,
@@ -78,7 +78,7 @@ var poemViewController = (function(){
     // Prepare for Successful Response from Server
     xmlhttp.onload = function(){
       poemView.displayResponseFromSaving(null,xmlhttp.responseText);
-      // var title = text.match('<title>(.*)?</title>')[1];
+      getListOfPoems();
     }
     // Prepare for Error from Server
     xmlhttp.onerror = function(){
@@ -93,14 +93,12 @@ var poemViewController = (function(){
     $.ajax({
         type: 'GET',
         url: originToServer + ':1337/',
-        data: { 'returnAllPoemNames': 'true'},
+        data: { 'reqType':'retrievePoemList'},
         dataType: "jsonp",
         jsonpCallback: "_poem",
         cache: false,
         timeout: 1000,
         success: function(data) {
-            // Parse the JSON
-            // data = JSON.parse(data)
             // Display the Poem
             poemView.fillPoemDropDown(null, data);
         },
@@ -125,16 +123,22 @@ var poemView = (function () {
   var retrievePoemButton = document.getElementById("retrievePoem");
   var poemTextArea = document.getElementById('poemTextArea');
   var selectedPoemFromDropDown = document.getElementById("selectAPoem");
-  // Populate Drop Down Menu (First, Get List of Poems)
+  // Populate Drop Down Menu
   poemViewController.getListOfPoems();
   // Public Function to Handle getting the list of Poems and adding them to Drop Down
   var fillPoemDropDown = function(error, listOfPoems){
-    // Parse the JSON
-    var poemNames = JSON.parse(listOfPoems)
-    console.log(poemNames);
-    for (var i=0; i < poemNames.poem.length; i++)
+    // Clear the current drop down menu
+    for (var i = selectedPoemFromDropDown.options.length-1; i>=0; i--)
     {
-      console.log(poemNames.poem[i].name);
+      selectedPoemFromDropDown.remove(i);
+    }
+    // Parse the JSON
+    listOfPoems = JSON.parse(listOfPoems)
+    // Grab each poem
+    for (var i=0; i < listOfPoems.poem.length; i++)
+    {
+      // Add to Drop down Menu
+      selectedPoemFromDropDown[selectedPoemFromDropDown.length] = new Option(listOfPoems.poem[i].name,listOfPoems.poem[i].name);
     }
   };
 
@@ -165,6 +169,7 @@ var poemView = (function () {
   }
   // Public Function to Drop text into Poem's Droppable Area.
   var dropToPoem = function(ev) {
+      ev.preventDefault();
       // Grab the element's ID from the object that was dragged
       var data = ev.dataTransfer.getData("Text");
       // Append the dragged element into the drop element (append a node as the last child of current node)
@@ -175,6 +180,7 @@ var poemView = (function () {
   }
   // Public Function to Drop text back into Word Bank.
   var dropToBank = function(ev) {
+      ev.preventDefault();
       // Grab the element's ID from the object that was dragged
       var data = ev.dataTransfer.getData("Text");
       // Append the dragged element into the drop element
@@ -205,7 +211,10 @@ var poemView = (function () {
   // Retrieve Poem from Postgres upon Click
   retrievePoemButton.onclick = function () {
     var selectedPoem_poemName = selectedPoemFromDropDown.options[selectedPoemFromDropDown.selectedIndex].value;
-    poemViewController.retrievePoem(selectedPoem_poemName);
+    if (selectedPoem_poemName != '')
+      poemViewController.retrievePoem(selectedPoem_poemName);
+    else
+      alert('Please Select a Poem from the List');
   };
 
   // Make some functions available

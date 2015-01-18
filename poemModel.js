@@ -29,7 +29,7 @@ var poemModel = (function(){
     if (request.method == 'GET'){
       // Parse "Incoming Message" from GET request: http://nodejs.org/api/http.html#http_http_incomingmessage
       var queryParam = urlParser.parse(request.url, true).query
-      if (queryParam.poemName != null)
+      if (queryParam.reqType == 'retrievePoem')
       {
         // Retrieve Poem from Database
         postgres.retrievePoemFromPostgres(queryParam.poemName, function (error, poemText){
@@ -40,9 +40,30 @@ var poemModel = (function(){
             response.end('_poem(\'{"poemText": "' + poemText + '"}\')');
         });
       }
-      if (queryParam.returnAllPoemNames != null)
+      else if (queryParam.reqType == 'retrievePoemList')
       {
-        response.end('_poem(\'{"poem":[{"name": "Ryan"}, {"name": "poem2"}, {"name": "poem3"}]}\')');
+        // Retrieve list of poems from Database
+        postgres.retrievePoemListFromPostgres(function (error, poemList){
+          // Respond using jsonp format
+          if (error)
+            response.end('_poem(\'{"fail": "Failed To Retrieve List of Poems From Database: ' + error + ' "}\')');
+          else
+          {
+            // Build response text
+            var jsonResponseWithListOfPoems = '_poem(\'{"poem":[';
+            for (var i=0; i < poemList.length; i++)
+            {
+              jsonResponseWithListOfPoems += '{"name":"' + poemList[i].poem_name + '"}';
+              if (i != poemList.length-1)
+              {
+                jsonResponseWithListOfPoems += ',';
+              }
+            }
+            jsonResponseWithListOfPoems += ']}\')';
+            // Send response with format: // response.end('_poem(\'{"poem":[{"name": "Ryan"}, {"name": "Poem2"}, {"name": "twist"}]}\')');
+            response.end(jsonResponseWithListOfPoems);
+          }
+        });
       }
     }
     

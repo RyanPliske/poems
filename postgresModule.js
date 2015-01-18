@@ -58,5 +58,22 @@ module.exports.retrievePoemFromPostgres = function (poemName, callback){
 	});
 }
 // Function to Display List of Poems in the Db
-
+module.exports.retrievePoemListFromPostgres = function (callback){
+	// First get a client from the connection pool
+	pg.connect(conString, function(err, dbClient, done){
+		if (err){
+		    return callback('error connecting to postgres: ' +err);
+		}
+		dbClient.query( {name: 'retrievePoemList', text: 'SELECT poem_name FROM poemschema.poems'}, function(err, result) {
+			if(err) {
+		    	return callback('error retrieving poem: ' + err);
+			}
+			else {
+				return callback(null, result.rows);
+			}
+		});
+		// Removes the client from the connection pool
+		done();
+	});
+}
 
