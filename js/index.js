@@ -5,10 +5,8 @@ var poemViewController = (function(){
   if (window.location.protocol != 'https:'){
     window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
   }
-  else {
-    // Grab current url to know if we're on localhost or not
-    var originToServer = window.location.origin;
-  }
+  // Grab current url to know if we're on localhost or not
+  var originToServer = window.location.origin;
   // Private Method that creates a request Object for Ajax
   var _createCORSRequestObject = function() {
     var xhr = new XMLHttpRequest();
@@ -63,7 +61,10 @@ var poemViewController = (function(){
             poemView.displayReturnedPoem(null, data.poemText);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            poemView.displayReturnedPoem(jqXHR + " " + textStatus + " " + errorThrown);
+            if (jqXHR.status == 0)
+              poemView.displayReturnedPoem('\nSorry, the Node.js Server is not currently servicing requests.');
+            else 
+              poemView.displayReturnedPoem(errorThrown);
         }
       });
     });
@@ -82,7 +83,11 @@ var poemViewController = (function(){
     }
     // Prepare for Error from Server
     xmlhttp.onerror = function(){
-      poemView.displayResponseFromSaving('No reponse from the server.');
+      if (xmlhttp.responseText)
+        poemView.displayResponseFromSaving(xmlhttp.responseText);
+      else
+        poemView.displayResponseFromSaving('\nSorry, the Node.js Server is not currently servicing requests.');
+      // poemView.displayResponseFromSaving('No reponse from the server.');
     }
     
   };
@@ -102,8 +107,12 @@ var poemViewController = (function(){
             // Display the Poem
             poemView.fillPoemDropDown(null, data);
         },
+        // jqXHR Object Properties: http://api.jquery.com/jQuery.ajax/#jqXHR
         error: function(jqXHR, textStatus, errorThrown) {
-            poemView.fillPoemDropDown(jqXHR + " " + textStatus + " " + errorThrown);
+            if (jqXHR.status == 0)
+              poemView.fillPoemDropDown('\nSorry, the Node.js Server is not currently servicing requests.');
+            else 
+              poemView.fillPoemDropDown(errorThrown);
         }
       });
     });
@@ -123,10 +132,17 @@ var poemView = (function () {
   var retrievePoemButton = document.getElementById("retrievePoem");
   var poemTextArea = document.getElementById('poemTextArea');
   var selectedPoemFromDropDown = document.getElementById("selectAPoem");
+  var currentListOfPoems = [];
   // Populate Drop Down Menu
   poemViewController.getListOfPoems();
   // Public Function to Handle getting the list of Poems and adding them to Drop Down
   var fillPoemDropDown = function(error, listOfPoems){
+    if (error)
+    {
+      alert("Uanble to Populate Drop Down Menu: " + error)
+      return;
+    }
+
     // Clear the current drop down menu
     for (var i = selectedPoemFromDropDown.options.length-1; i>=0; i--)
     {
@@ -139,8 +155,49 @@ var poemView = (function () {
     {
       // Add to Drop down Menu
       selectedPoemFromDropDown[selectedPoemFromDropDown.length] = new Option(listOfPoems.poem[i].name,listOfPoems.poem[i].name);
+      currentListOfPoems[i] = listOfPoems.poem[i].name;
     }
   };
+
+  // Private Function to Validate Name is not taken from the database
+  var _validatePoemName = function(){
+    $( "#poemName" )
+      //Upon naming your poem for saving
+      .keyup(function() {
+        var poemNameTaken = false;
+        var inputForPoemName = $(this).val();
+        // If input field is empty then return.
+        if (inputForPoemName == '')
+        {
+          document.getElementById('nameYourPoem').className = '';
+          document.getElementById('poemNameSucccessEmblem').className = '';
+          return;
+        }
+        // Check against the list of Poem Names
+        for (var i=0; i < currentListOfPoems.length; i++)
+        {
+          if (inputForPoemName == currentListOfPoems[i])
+          {
+            poemNameTaken = true;
+            break;
+          }
+        }
+        // If poem name is NOT taken display success
+        if (!poemNameTaken)
+        {
+          document.getElementById('nameYourPoem').className = 'form-group has-success has-feedback';
+          document.getElementById('poemNameSucccessEmblem').className = 'glyphicon glyphicon-ok form-control-feedback';
+        }
+        // Else display Red Ex to indicate that the name is already used
+        else
+        {
+          document.getElementById('nameYourPoem').className = 'form-group has-error has-feedback';
+          document.getElementById('poemNameSucccessEmblem').className = 'glyphicon glyphicon-remove form-control-feedback';
+        }
+      })
+      .keyup();
+  };
+  _validatePoemName();
 
   // Public Function to Handle Saving Poem to Database
   var displayResponseFromSaving = function(error, successMsg) {
@@ -186,7 +243,7 @@ var poemView = (function () {
       // Append the dragged element into the drop element
       ev.target.appendChild(document.getElementById(data));
       // Edit the Poem's Text
-      editPoemTextArea();
+      _editPoemTextArea();
   }
   // Private Function: Crawls HTML elements from the Bin and appends them to Text Area
   var _editPoemTextArea = function(){

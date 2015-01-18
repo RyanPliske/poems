@@ -20,7 +20,8 @@ var poemModel = (function(){
     /* Second Argument: 
     /* 1: Allow Origin for CORS
     /* 2: If I want to add more functionality later, I can add more Methods to delete poems, etc.
-    /* 3: Allow Credentials to accept Cookies */
+    /* 3: Allow Credentials to accept Cookies if I wanted to send some */
+  
     response.writeHead(200, {'Content-Type': 'application/javascript',
                               'Access-Control-Allow-Origin': request.headers.origin,
                               'Access-Control-Allow-Methods' : 'GET,POST',
@@ -65,9 +66,14 @@ var poemModel = (function(){
           }
         });
       }
+      else
+        /* This is just to test FireFox issue by going to the domain:1337 via browser
+        /* To get this to work on FireFox, First please visit: https://192.168.1.91:1337/
+        /* to accept the security warning
+        */
+        response.end('Hello Firefox and IE, why you no like me?\nIs my self authenticated SSL certificate not good enough for you?');
     }
-    
-    if (request.method == 'POST'){
+    else if (request.method == 'POST'){
       // Parse Data from POST request by first reading in the data
       var bodyFromRequest = "";
       request.on('data', function(chunk){
@@ -88,8 +94,7 @@ var poemModel = (function(){
             response.end('Successfully Saved Poem to Database');
         });
       });
-    }
-    
+    }      
   }).listen(1337);
   console.log('Server started. Listening on port:1337/');
 })();
