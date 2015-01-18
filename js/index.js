@@ -166,11 +166,13 @@ var poemView = (function () {
       .keyup(function() {
         var poemNameTaken = false;
         var inputForPoemName = $(this).val();
+        var nameYourPoemInput = document.getElementById('nameYourPoem');
+        var poemInputSuccessEmblem = document.getElementById('poemNameSucccessEmblem')
         // If input field is empty then return.
         if (inputForPoemName == '')
         {
-          document.getElementById('nameYourPoem').className = '';
-          document.getElementById('poemNameSucccessEmblem').className = '';
+          nameYourPoemInput.className = '';
+          poemInputSuccessEmblem.className = '';
           return;
         }
         // Check against the list of Poem Names
@@ -185,14 +187,14 @@ var poemView = (function () {
         // If poem name is NOT taken display success
         if (!poemNameTaken)
         {
-          document.getElementById('nameYourPoem').className = 'form-group has-success has-feedback';
-          document.getElementById('poemNameSucccessEmblem').className = 'glyphicon glyphicon-ok form-control-feedback';
+          nameYourPoemInput.className = 'form-group has-success has-feedback';
+          poemInputSuccessEmblem.className = 'glyphicon glyphicon-ok form-control-feedback';
         }
         // Else display Red Ex to indicate that the name is already used
         else
         {
-          document.getElementById('nameYourPoem').className = 'form-group has-error has-feedback';
-          document.getElementById('poemNameSucccessEmblem').className = 'glyphicon glyphicon-remove form-control-feedback';
+          nameYourPoemInput.className = 'form-group has-error has-feedback';
+          poemInputSuccessEmblem.className = 'glyphicon glyphicon-remove form-control-feedback';
         }
       })
       .keyup();
@@ -212,7 +214,12 @@ var poemView = (function () {
     if (error)
       alert(error);
     else
+    {
       poemTextArea.innerHTML = successMsg;
+      setTimeout(function(){
+        $('#retrievePoem').button('reset')
+      },500);
+    }
   };
   // Public Function to ready any element to allow for the drop event
   var allowDrop = function(ev) {
@@ -269,7 +276,10 @@ var poemView = (function () {
   retrievePoemButton.onclick = function () {
     var selectedPoem_poemName = selectedPoemFromDropDown.options[selectedPoemFromDropDown.selectedIndex].value;
     if (selectedPoem_poemName != '')
+    {
+      $('#retrievePoem').button('loading')
       poemViewController.retrievePoem(selectedPoem_poemName);
+    }
     else
       alert('Please Select a Poem from the List');
   };
