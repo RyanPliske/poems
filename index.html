@@ -4,7 +4,7 @@
 	<title>Poems</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css"> -->
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 </head>
@@ -16,10 +16,11 @@
 	<div id ="DragAndDrop" style="width:60%;height:45vh;border:0px solid;">
 
 		<div id="bin" style="width:45%; height: 99%; border: 1px solid;float: left;border-radius:5px;" ondrop="poemView.dropToPoem(event);" ondragover="poemView.allowDrop(event);">
+			<p></p>
 		</div>
 		
 		<div id="wordBank" style="width:45%; height: 99%; border: 1px solid; float: right;border-radius:5px;" ondrop="poemView.dropToBank(event);" ondragover="poemView.allowDrop(event);">
-			<p class="bg-primary" style="float:left;padding:1px;border:1px solid;" id="word1" draggable="true" ondragstart="poemView.startDrag(event);"> twist </p>
+			<p class="bg-primary" style="float:left;padding:1px;border:1px solid;" id="word1" draggable="true" ondragstart="poemView.startDrag(event);" ondragover=""> twist </p>
 			<p class="bg-primary" style="float:left;padding:1px;border:1px solid;" id="word2" draggable="true" ondragstart="poemView.startDrag(event);">tears</p>
 			<p class="bg-primary" style="float:left;padding:1px;border:1px solid;" id="word3" draggable="true" ondragstart="poemView.startDrag(event);">despair</p>
 			<p class="bg-primary" style="float:left;padding:1px;border:1px solid;" id="word4" draggable="true" ondragstart="poemView.startDrag(event);">far</p>

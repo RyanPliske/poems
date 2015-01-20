@@ -225,33 +225,57 @@ var poemView = (function () {
   var allowDrop = function(ev) {
       // prevent default handling of the element (allows dropping)
       ev.preventDefault();
-  }
+  };
   // Public Function to set the data type and value of the dragged element
   var startDrag = function(ev) {
       // Set data type to text, value set to the id of the draggable element
       ev.dataTransfer.setData("Text", ev.target.id);
-  }
+  };
   // Public Function to Drop text into Poem's Droppable Area.
   var dropToPoem = function(ev) {
       ev.preventDefault();
       // Grab the element's ID from the object that was dragged
       var data = ev.dataTransfer.getData("Text");
+      
+      if (_getChildrenByTagName(ev.target,"p")=='')
+      {
+        return;
+      }
       // Append the dragged element into the drop element (append a node as the last child of current node)
-      // http://www.w3schools.com/jsref/met_node_appendchild.asp
       ev.target.appendChild(document.getElementById(data));
       // Edit the Poem's Text
       _editPoemTextArea();
-  }
-  // Public Function to Drop text back into Word Bank.
+  };
+  // Public Function to Drop text back into Word Bank. 
   var dropToBank = function(ev) {
       ev.preventDefault();
       // Grab the element's ID from the object that was dragged
       var data = ev.dataTransfer.getData("Text");
+      
+      if (_getChildrenByTagName(ev.target,"p")=='')
+      {
+        return;
+      }
+      
       // Append the dragged element into the drop element
       ev.target.appendChild(document.getElementById(data));
       // Edit the Poem's Text
       _editPoemTextArea();
-  }
+  };
+  
+  // Private Function to prevent words dropping into each other.
+  var _getChildrenByTagName = function (parent,tag_name) {
+    var all_children = parent.childNodes;
+    var new_children = new Array();
+    for (var i=0, j=0; i<all_children.length; i++) {
+        if (all_children[i].tagName && (all_children[i].tagName.toLowerCase() == tag_name.toLowerCase())) {
+            new_children[j] = all_children[i];
+            j++;
+        }
+    }
+    return new_children;
+  };
+  
   // Private Function: Crawls HTML elements from the Bin and appends them to Text Area
   var _editPoemTextArea = function(){
     // Clear out contents
